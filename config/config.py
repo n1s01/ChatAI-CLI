@@ -23,7 +23,13 @@ def get_system_message():
 
 def get_model_id():
     """Получение ID модели."""
-    return MODEL_ID
+    # Всегда читаем актуальное значение из файла, а не используем кэшированное
+    try:
+        with open(SETTINGS_PATH, "r", encoding="utf-8") as settings_file:
+            settings = json.load(settings_file)
+            return settings.get("model")
+    except (json.JSONDecodeError, IOError):
+        return MODEL_ID  # Возвращаем кэшированное значение в случае ошибки
 
 
 def update_settings(new_settings):
