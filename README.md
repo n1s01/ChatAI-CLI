@@ -1,7 +1,5 @@
 # ChatAI CLI
 
-A powerful command-line interface for interacting with various AI models directly from your terminal.
-
 ## Features
 
 - **Multiple AI Models**: Support for Llama, GPT, Qwen, Mistral, and other leading AI models
