@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 SETTINGS_PATH = os.path.join(os.path.dirname(__file__), "settings.json")
 with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
     _settings = json.load(f)
-SYSTEM_MESSAGE = _settings.get("system_message", {"role": "system", "content": "You are a helpful assistant."})
-MODEL_ID = _settings.get("model", "openai/gpt-oss-20b")
+SYSTEM_MESSAGE = _settings.get("system_message")
+MODEL_ID = _settings.get("model")
 
 load_dotenv()
 
