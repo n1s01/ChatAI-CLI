@@ -10,10 +10,20 @@ from colorama import Fore, Style
 
 from src.api_client import send_message
 from src.ui import (
-    Loader, display_main_menu, display_settings_menu,
-    display_chat_start, display_assistant_response, display_error,
-    display_goodbye, display_invalid_option, get_user_input,
-    display_status, display_models, display_help, display_export_success, display_export_error
+    Loader,
+    display_main_menu,
+    display_settings_menu,
+    display_chat_start,
+    display_assistant_response,
+    display_error,
+    display_goodbye,
+    display_invalid_option,
+    get_user_input,
+    display_status,
+    display_models,
+    display_help,
+    display_export_success,
+    display_export_error,
 )
 from src.stats import get_today_stats, get_all_time_stats
 from src.models import load_models, get_current_model, change_model
@@ -31,7 +41,7 @@ def handle_command(user_input, messages):
         "status": "show token statistics",
         "export": "export the chat",
         "model": "change the model",
-        "help": "show help"
+        "help": "show help",
     }
 
     if command in available_commands:
@@ -79,24 +89,39 @@ def handle_command(user_input, messages):
                 input("Press Enter to continue...")
                 return True
 
-            choice = display_models(models, current_model)
-
-            if choice == "0":
-                return True
-
-            try:
-                model_index = int(choice) - 1
-                if 0 <= model_index < len(models):
-                    selected_model = models[model_index]
-                    _, message = change_model(selected_model["id"])
-                    print(message)
+            if len(parts) > 1:
+                try:
+                    model_index = int(parts[1]) - 1
+                    if 0 <= model_index < len(models):
+                        selected_model = models[model_index]
+                        _, message = change_model(selected_model["id"])
+                        print(message)
+                        input("Press Enter to continue...")
+                    else:
+                        print("Invalid model selection")
+                        input("Press Enter to continue...")
+                except ValueError:
+                    print("Invalid input format. Use 'model' or 'model [number]'")
                     input("Press Enter to continue...")
-                else:
-                    print("Invalid model selection")
+            else:
+                choice = display_models(models, current_model)
+
+                if choice == "0":
+                    return True
+
+                try:
+                    model_index = int(choice) - 1
+                    if 0 <= model_index < len(models):
+                        selected_model = models[model_index]
+                        _, message = change_model(selected_model["id"])
+                        print(message)
+                        input("Press Enter to continue...")
+                    else:
+                        print("Invalid model selection")
+                        input("Press Enter to continue...")
+                except ValueError:
+                    print("Invalid input format")
                     input("Press Enter to continue...")
-            except ValueError:
-                print("Invalid input format")
-                input("Press Enter to continue...")
 
             return True
 
@@ -127,9 +152,12 @@ def start_new_chat():
     def show_chat_info_if_empty():
         """Показать информацию о чате, если в нем нет сообщений."""
         if len(messages) <= 1:
-            print(f"{Fore.GREEN}New chat started. For exit: type 'exit'{Style.RESET_ALL}")
             print(
-                f"{Fore.LIGHTBLACK_EX}Available commands: status, export, model, help{Style.RESET_ALL}\n"
+                f"{Fore.GREEN}New chat started. For exit: type 'exit'{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.LIGHTBLACK_EX}Available commands: status, export, model, "
+                f"help{Style.RESET_ALL}\n"
             )
 
     while True:
@@ -150,7 +178,11 @@ def start_new_chat():
                 loader.stop()
                 messages.append({"role": "assistant", "content": answer})
                 display_assistant_response(answer, tokens_used)
-            except (openai.APIError, openai.RateLimitError, openai.AuthenticationError) as e:
+            except (
+                openai.APIError,
+                openai.RateLimitError,
+                openai.AuthenticationError,
+            ) as e:
                 loader.stop()
                 display_error("api", str(e))
                 messages.pop()
@@ -169,7 +201,40 @@ def start_new_chat():
 
 def settings():
     """Меню настроек."""
-    display_settings_menu()
+    while True:
+        choice = display_settings_menu()
+
+        if choice == "1":
+            models = load_models()
+            current_model = get_current_model()
+
+            if not models:
+                print("Model list is empty or unavailable")
+                input("Press Enter to continue...")
+                continue
+
+            choice = display_models(models, current_model)
+
+            if choice == "0":
+                continue
+
+            try:
+                model_index = int(choice) - 1
+                if 0 <= model_index < len(models):
+                    selected_model = models[model_index]
+                    _, message = change_model(selected_model["id"])
+                    print(message)
+                    input("Press Enter to continue...")
+                else:
+                    print("Invalid model selection")
+                    input("Press Enter to continue...")
+            except ValueError:
+                print("Invalid input format")
+                input("Press Enter to continue...")
+        elif choice == "0":
+            break
+        else:
+            display_invalid_option()
 
 
 def show_main_menu():

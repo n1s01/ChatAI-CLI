@@ -23,20 +23,21 @@ def get_system_message():
 
 def get_model_id():
     """Получение ID модели."""
-    return MODEL_ID
+    # Всегда читаем актуальное значение из файла, а не используем кэшированное
+    try:
+        with open(SETTINGS_PATH, "r", encoding="utf-8") as settings_file:
+            settings = json.load(settings_file)
+            return settings.get("model")
+    except (json.JSONDecodeError, IOError):
+        return MODEL_ID  # Возвращаем кэшированное значение в случае ошибки
 
 
 def update_settings(new_settings):
     """Обновление настроек."""
     with open(SETTINGS_PATH, "w", encoding="utf-8") as settings_file:
         json.dump(new_settings, settings_file, indent=2, ensure_ascii=False)
-    
-    # Обновляем глобальные переменные
-    global _settings, SYSTEM_MESSAGE, MODEL_ID
-    _settings = new_settings
-    SYSTEM_MESSAGE = new_settings.get("system_message")
-    MODEL_ID = new_settings.get("model")
-    
+
+    # Возвращаем обновленные значения вместо изменения глобальных переменных
     return (
         new_settings.get("system_message"),
         new_settings.get("model")

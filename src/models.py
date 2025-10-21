@@ -4,7 +4,7 @@
 
 import os
 import json
-from config.config import update_settings, _settings, get_model_id
+from config.config import update_settings, get_model_id
 
 
 MODELS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "models.json")
@@ -46,12 +46,20 @@ def change_model(model_id):
         return False, "Модель с указанным ID не найдена"
 
     try:
-        new_settings = _settings.copy()
-        new_settings["model"] = model_id
+        # Читаем текущие настройки из файла
+        settings_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "config", "settings.json"
+        )
+        with open(settings_path, "r", encoding="utf-8") as settings_file:
+            current_settings = json.load(settings_file)
 
-        update_settings(new_settings)
+        # Обновляем только модель
+        current_settings["model"] = model_id
+
+        # Сохраняем обновленные настройки
+        update_settings(current_settings)
         return True, f"Модель успешно изменена на: {model.get('name', model_id)}"
-    except (IOError, OSError, KeyError) as e:
+    except (IOError, OSError, KeyError, json.JSONDecodeError) as e:
         return False, f"Ошибка при изменении модели: {str(e)}"
 
 
