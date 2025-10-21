@@ -1,0 +1,69 @@
+{
+  "aggregator": "io-intelligence",
+  "models": [
+    {
+      "id": "meta-llama/Llama-3.2-90B-Vision-Instruct",
+      "name": "Llama-3.2-90B-Vision-Instruct"
+    },
+    {
+      "id": "openai/gpt-oss-120b",
+      "name": "GPT-OSS-120B"
+    },
+    {
+      "id": "Qwen/Qwen2.5-VL-32B-Instruct",
+      "name": "Qwen2.5-VL-32B-Instruct"
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-R1-0528",
+      "name": "DeepSeek-R1-0528"
+    },
+    {
+      "id": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "name": "Qwen3-Next-80B-A3B-Instruct"
+    },
+    {
+      "id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+      "name": "Qwen3-235B-A22B-Thinking-2507"
+    },
+    {
+      "id": "Intel/Qwen3-Coder-480B-A35B-Instruct-int4-mixed-ar",
+      "name": "Qwen3-Coder-480B-A35B-Instruct-int4-mixed-ar"
+    },
+    {
+      "id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "name": "Llama-4-Maverick-17B-128E-Instruct-FP8"
+    },
+    {
+      "id": "LLM360/K2-Think",
+      "name": "K2-Think"
+    },
+    {
+      "id": "swiss-ai/Apertus-70B-Instruct-2509",
+      "name": "Apertus-70B-Instruct-2509"
+    },
+    {
+      "id": "mistralai/Mistral-Nemo-Instruct-2407",
+      "name": "Mistral-Nemo-Instruct-2407"
+    },
+    {
+      "id": "openai/gpt-oss-20b",
+      "name": "GPT-OSS-20B"
+    },
+    {
+      "id": "mistralai/Devstral-Small-2505",
+      "name": "Devstral-Small-2505"
+    },
+    {
+      "id": "mistralai/Magistral-Small-2506",
+      "name": "Magistral-Small-2506"
+    },
+    {
+      "id": "meta-llama/Llama-3.3-70B-Instruct",
+      "name": "Llama-3.3-70B-Instruct"
+    },
+    {
+      "id": "mistralai/Mistral-Large-Instruct-2411",
+      "name": "Mistral-Large-Instruct-2411"
+    }
+  ]
+}
