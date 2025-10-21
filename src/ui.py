@@ -60,8 +60,10 @@ def display_main_menu():
 def display_settings_menu():
     """Отображение меню настроек."""
     clear_screen()
-    print(f"\n{Fore.YELLOW}Settings menu is currently empty.{Style.RESET_ALL}")
-    input(f"{Fore.LIGHTBLACK_EX}Press Enter to return to main menu...{Style.RESET_ALL}")
+    print(f"\n{Fore.CYAN}=== Settings ==={Style.RESET_ALL}")
+    print(f"{Fore.LIGHTBLACK_EX}1. Change model{Style.RESET_ALL}")
+    print(f"{Fore.LIGHTBLACK_EX}0. Back to main menu{Style.RESET_ALL}")
+    return input(f"\n{Fore.LIGHTBLACK_EX}Select an option (0-1): {Style.RESET_ALL}")
 
 
 def display_chat_start():
@@ -119,26 +121,30 @@ def display_status(today_stats, all_time_stats):
 
     print(f"{Fore.YELLOW}Today ({today_stats['date']}):{Style.RESET_ALL}")
     print(
-        f"  Requests: {today_stats['requests']} | ↑⌬: {today_stats['input_tokens']} | ↓⌬: {today_stats['output_tokens']} | Σ⌬: {today_stats['total_tokens']}"
+        f"  Requests: {today_stats['requests']} | ↑⌬: {today_stats['input_tokens']} | "
+        f"↓⌬: {today_stats['output_tokens']} | Σ⌬: {today_stats['total_tokens']}"
     )
 
     if today_stats["models"]:
         print(f"\n{Fore.LIGHTBLACK_EX}By models:{Style.RESET_ALL}")
         for model_id, model_stats in today_stats["models"].items():
             print(
-                f"  {model_id}: {model_stats['requests']} req | ↑{model_stats['input_tokens']} | ↓{model_stats['output_tokens']}"
+                f"  {model_id}: {model_stats['requests']} req | "
+                f"↑{model_stats['input_tokens']} | ↓{model_stats['output_tokens']}"
             )
 
     print(f"\n{Fore.YELLOW}All time:{Style.RESET_ALL}")
     print(
-        f"  Requests: {all_time_stats['requests']} | ↑⌬: {all_time_stats['input_tokens']} | ↓⌬: {all_time_stats['output_tokens']} | Σ⌬: {all_time_stats['total_tokens']}"
+        f"  Requests: {all_time_stats['requests']} | ↑⌬: {all_time_stats['input_tokens']} | "
+        f"↓⌬: {all_time_stats['output_tokens']} | Σ⌬: {all_time_stats['total_tokens']}"
     )
 
     if all_time_stats["models"]:
         print(f"\n{Fore.LIGHTBLACK_EX}By models:{Style.RESET_ALL}")
         for model_id, model_stats in all_time_stats["models"].items():
             print(
-                f"  {model_id}: {model_stats['requests']} req | ↑{model_stats['input_tokens']} | ↓{model_stats['output_tokens']}"
+                f"  {model_id}: {model_stats['requests']} req | "
+                f"↑{model_stats['input_tokens']} | ↓{model_stats['output_tokens']}"
             )
 
     input(f"\n{Fore.LIGHTBLACK_EX}Press Enter to continue...{Style.RESET_ALL}")
@@ -182,8 +188,8 @@ def display_help():
             "description": "Export current chat to JSON or TXT file",
         },
         {
-            "command": "model",
-            "description": "Show available models and select current model",
+            "command": "model [number]",
+            "description": "Show available models or select model by number (e.g., 'model 3')",
         },
         {"command": "help", "description": "Show this help"},
     ]

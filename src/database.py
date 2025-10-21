@@ -17,7 +17,6 @@ def init_database():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Создаем таблицу для статистики использования
     cursor.execute(
         """
     CREATE TABLE IF NOT EXISTS usage_stats (
@@ -43,15 +42,14 @@ def update_usage(input_tokens, output_tokens, model_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Проверяем, есть ли уже запись для этой модели на сегодня
     cursor.execute(
-        "SELECT requests, input_tokens, output_tokens FROM usage_stats WHERE date = ? AND model_id = ?",
+        "SELECT requests, input_tokens, output_tokens FROM usage_stats "
+        "WHERE date = ? AND model_id = ?",
         (today, model_id),
     )
     result = cursor.fetchone()
 
     if result:
-        # Обновляем существующую запись
         requests, input_tok, output_tok = result
         cursor.execute(
             """
@@ -68,7 +66,6 @@ def update_usage(input_tokens, output_tokens, model_id):
             ),
         )
     else:
-        # Создаем новую запись
         cursor.execute(
             """
             INSERT INTO usage_stats (date, model_id, requests, input_tokens, output_tokens)
@@ -88,7 +85,6 @@ def get_today_stats():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Получаем общую статистику за сегодня
     cursor.execute(
         """
         SELECT 
@@ -103,7 +99,6 @@ def get_today_stats():
     result = cursor.fetchone()
     total_requests, total_input_tokens, total_output_tokens = result
 
-    # Получаем статистику по моделям за сегодня
     cursor.execute(
         """
         SELECT model_id, requests, input_tokens, output_tokens
@@ -139,7 +134,6 @@ def get_all_time_stats():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Получаем общую статистику за все время
     cursor.execute(
         """
         SELECT 
@@ -152,7 +146,6 @@ def get_all_time_stats():
     result = cursor.fetchone()
     total_requests, total_input_tokens, total_output_tokens = result
 
-    # Получаем статистику по моделям за все время
     cursor.execute(
         """
         SELECT model_id, 
