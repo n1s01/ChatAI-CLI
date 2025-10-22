@@ -1,4 +1,4 @@
-# ChatAI CLI
+# ChatAI CLI - ur AI assistant
 
 ## Features
 
