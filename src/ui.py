@@ -92,22 +92,9 @@ def display_error(error_type, error_message):
     """Отображение ошибки."""
     if error_type == "api":
         # Проверяем, является ли ошибка связанной с неподдерживаемой моделью
-<<<<<<< HEAD
-        if (
-            "does not support Chat Completions API" in error_message
-            or "model not found" in error_message.lower()
-        ):
-            print(
-                f"{Fore.RED}Model Error:{Style.RESET_ALL} The selected model is not supported or not found."
-            )
-            print(
-                f"{Fore.LIGHTBLACK_EX}Please use a different model or check the available models on the provider's website.{Style.RESET_ALL}\n"
-            )
-=======
         if "does not support Chat Completions API" in error_message or "model not found" in error_message.lower():
             print(f"{Fore.RED}Model Error:{Style.RESET_ALL} The selected model is not supported or not found.")
             print(f"{Fore.LIGHTBLACK_EX}Please use a different model or check the available models on the provider's website.{Style.RESET_ALL}\n")
->>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
         else:
             print(f"API Error: {error_message}\n")
     elif error_type == "connection":
