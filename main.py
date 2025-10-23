@@ -105,23 +105,31 @@ def handle_command(user_input, messages):
                     input("Press Enter to continue...")
             else:
                 # Показываем текущую модель и предлагаем ввести новую вручную
-                os.system('cls' if os.name == 'nt' else 'clear')
+                os.system("cls" if os.name == "nt" else "clear")
                 print(f"\n{Fore.CYAN}=== Model Selection ==={Style.RESET_ALL}\n")
-                
+
                 if current_model:
-                    print(f"{Fore.YELLOW}Current model:{Style.RESET_ALL} {current_model.get('name', current_model.get('id', 'Unknown'))}")
+                    print(
+                        f"{Fore.YELLOW}Current model:{Style.RESET_ALL} {current_model.get('name', current_model.get('id', 'Unknown'))}"
+                    )
                 else:
                     print(f"{Fore.YELLOW}Current model:{Style.RESET_ALL} Not set")
-                
-                print(f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}")
-                print(f"{Fore.LIGHTBLACK_EX}Available models can be found on the provider's website.{Style.RESET_ALL}")
-                
-                print(f"\n{Fore.LIGHTBLACK_EX}Enter model ID or '0' to cancel:{Style.RESET_ALL}")
+
+                print(
+                    f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}"
+                )
+                print(
+                    f"{Fore.LIGHTBLACK_EX}Available models can be found on the provider's website.{Style.RESET_ALL}"
+                )
+
+                print(
+                    f"\n{Fore.LIGHTBLACK_EX}Enter model ID or '0' to cancel:{Style.RESET_ALL}"
+                )
                 model_input = input().strip()
-                
+
                 if model_input == "0":
                     return True
-                
+
                 if model_input:
                     # Проверяем, является ли ввод числом (выбор из списка)
                     try:
@@ -136,7 +144,7 @@ def handle_command(user_input, messages):
                         # Если ввод не число, считаем это ID модели
                         _, message = change_model(model_input)
                         print(message)
-                    
+
                     input("Press Enter to continue...")
 
         elif command == "help":
@@ -228,23 +236,31 @@ def settings():
                 continue
 
             # Показываем текущую модель и предлагаем ввести новую вручную
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             print(f"\n{Fore.CYAN}=== Model Selection ==={Style.RESET_ALL}\n")
-            
+
             if current_model:
-                print(f"{Fore.YELLOW}Current model:{Style.RESET_ALL} {current_model.get('name', current_model.get('id', 'Unknown'))}")
+                print(
+                    f"{Fore.YELLOW}Current model:{Style.RESET_ALL} {current_model.get('name', current_model.get('id', 'Unknown'))}"
+                )
             else:
                 print(f"{Fore.YELLOW}Current model:{Style.RESET_ALL} Not set")
-            
-            print(f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}")
-            print(f"{Fore.LIGHTBLACK_EX}Available models can be found on the provider's website.{Style.RESET_ALL}")
-            
-            print(f"\n{Fore.LIGHTBLACK_EX}Enter model ID or '0' to cancel:{Style.RESET_ALL}")
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.LIGHTBLACK_EX}Available models can be found on the provider's website.{Style.RESET_ALL}"
+            )
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}Enter model ID or '0' to cancel:{Style.RESET_ALL}"
+            )
             model_input = input().strip()
-            
+
             if model_input == "0":
                 continue
-            
+
             if model_input:
                 # Проверяем, является ли ввод числом (выбор из списка)
                 try:
@@ -259,7 +275,7 @@ def settings():
                     # Если ввод не число, считаем это ID модели
                     _, message = change_model(model_input)
                     print(message)
-                
+
                 input("Press Enter to continue...")
         elif choice == "0":
             break
