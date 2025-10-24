@@ -2,12 +2,10 @@
 Модуль для работы с моделями AI.
 """
 
-<<<<<<< HEAD
-from src.database import get_model, update_settings
-=======
 import os
 import json
-from config.config import update_settings, get_model_id
+from config.config import get_model_id
+from src.database import update_settings
 from colorama import Fore, Style
 
 
@@ -41,41 +39,27 @@ def get_model_by_id(model_id):
         if model.get("id") == model_id:
             return model
     return None
->>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
 
 
 def change_model(model_id):
     """Изменение текущей модели."""
-<<<<<<< HEAD
-=======
     model = get_model_by_id(model_id)
     
->>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
     try:
         # Получаем текущие настройки из базы данных
         from src.database import get_settings
 
         current_settings = get_settings()
 
-        # Обновляем только модель, оставляя остальные настройки без изменений
-        update_settings(
-            current_settings.get("api_key", ""),
-            current_settings.get(
-                "endpoint", "https://api.intelligence.io.solutions/api/v1/"
-            ),
-            model_id,
-        )
-
-<<<<<<< HEAD
-        # Формируем сообщение об успешном изменении
-        return True, f"Модель успешно изменена на: {model_id}"
-    except (IOError, OSError, KeyError) as e:
-=======
         # Обновляем только модель
         current_settings["model"] = model_id
 
         # Сохраняем обновленные настройки
-        update_settings(current_settings)
+        update_settings(
+            current_settings.get("api_key", ""),
+            current_settings.get("endpoint", "https://api.intelligence.io.solutions/api/v1/"),
+            model_id
+        )
         
         # Формируем сообщение об успешном изменении
         if model:
@@ -85,20 +69,11 @@ def change_model(model_id):
             # Если модель не найдена в списке, предупреждаем пользователя
             return True, f"Модель изменена на: {model_id}\n{Fore.LIGHTBLACK_EX}Внимание: Эта модель отсутствует в списке поддерживаемых. Убедитесь, что она доступна на сайте провайдера.{Style.RESET_ALL}"
     except (IOError, OSError, KeyError, json.JSONDecodeError) as e:
->>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
         return False, f"Ошибка при изменении модели: {str(e)}"
 
 
 def get_current_model():
     """Получение текущей модели."""
-<<<<<<< HEAD
-    model_id = get_model()
-
-    # Если модель установлена, возвращаем базовую информацию
-    if model_id:
-        return {"id": model_id, "name": model_id}
-
-=======
     model_id = get_model_id()
     model = get_model_by_id(model_id)
     
@@ -110,6 +85,5 @@ def get_current_model():
     if model_id:
         return {"id": model_id, "name": model_id}
     
->>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
     # Если модель не установлена, возвращаем None
     return None
