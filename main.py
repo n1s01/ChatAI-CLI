@@ -5,6 +5,7 @@ ChatAI CLI - Интерфейс командной строки для взаи�
 
 import sys
 import time
+import os
 import openai
 from colorama import Fore, Style
 
@@ -20,13 +21,12 @@ from src.ui import (
     display_invalid_option,
     get_user_input,
     display_status,
-    display_models,
     display_help,
     display_export_success,
     display_export_error,
 )
 from src.stats import get_today_stats, get_all_time_stats
-from src.models import load_models, get_current_model, change_model
+from src.models import get_current_model, change_model
 from src.export import export_to_json, export_to_txt
 from config.config import get_system_message, get_model_id
 
@@ -34,6 +34,11 @@ from config.config import get_system_message, get_model_id
 def handle_command(user_input, messages):
     """Обработка специальных команд."""
     parts = user_input.strip().split()
+
+    # Проверяем, что ввод не пустой
+    if not parts:
+        return False
+
     command = parts[0].lower()
 
     available_commands = {
@@ -81,49 +86,65 @@ def handle_command(user_input, messages):
             return True
 
         elif command == "model":
-            models = load_models()
             current_model = get_current_model()
 
-            if not models:
-                print("Model list is empty or unavailable")
-                input("Press Enter to continue...")
-                return True
-
             if len(parts) > 1:
-                try:
-                    model_index = int(parts[1]) - 1
-                    if 0 <= model_index < len(models):
-                        selected_model = models[model_index]
-                        _, message = change_model(selected_model["id"])
-                        print(message)
-                        input("Press Enter to continue...")
-                    else:
-                        print("Invalid model selection")
-                        input("Press Enter to continue...")
-                except ValueError:
-                    print("Invalid input format. Use 'model' or 'model [number]'")
-                    input("Press Enter to continue...")
+                # Если указан ID модели напрямую
+                model_id = parts[1]
+                _, message = change_model(model_id)
+                print(message)
+                input("Press Enter to continue...")
             else:
-                choice = display_models(models, current_model)
+<<<<<<< HEAD
+=======
+                # Показываем текущую модель и предлагаем ввести новую вручную
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
+                os.system("cls" if os.name == "nt" else "clear")
+                print(f"\n{Fore.CYAN}=== Model Selection ==={Style.RESET_ALL}\n")
 
-                if choice == "0":
+                if current_model:
+                    print(
+                        f"{Fore.YELLOW}Current model:{Style.RESET_ALL} {current_model.get('name', current_model.get('id', 'Unknown'))}"
+                    )
+                else:
+                    print(f"{Fore.YELLOW}Current model:{Style.RESET_ALL} Not set")
+
+                print(
+                    f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}"
+                )
+                print(
+                    f"{Fore.LIGHTBLACK_EX}Available models can be found on the provider's website.{Style.RESET_ALL}"
+                )
+
+                print(
+                    f"\n{Fore.LIGHTBLACK_EX}Enter model ID or '0' to cancel:{Style.RESET_ALL}"
+                )
+                model_input = input().strip()
+
+                if model_input == "0":
                     return True
 
-                try:
-                    model_index = int(choice) - 1
-                    if 0 <= model_index < len(models):
-                        selected_model = models[model_index]
-                        _, message = change_model(selected_model["id"])
+                if model_input:
+<<<<<<< HEAD
+                    _, message = change_model(model_input)
+                    print(message)
+=======
+                    # Проверяем, является ли ввод числом (выбор из списка)
+                    try:
+                        model_index = int(model_input) - 1
+                        if 0 <= model_index < len(models):
+                            selected_model = models[model_index]
+                            _, message = change_model(selected_model["id"])
+                            print(message)
+                        else:
+                            print("Invalid model selection")
+                    except ValueError:
+                        # Если ввод не число, считаем это ID модели
+                        _, message = change_model(model_input)
                         print(message)
-                        input("Press Enter to continue...")
-                    else:
-                        print("Invalid model selection")
-                        input("Press Enter to continue...")
-                except ValueError:
-                    print("Invalid input format")
-                    input("Press Enter to continue...")
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
 
-            return True
+                    input("Press Enter to continue...")
 
         elif command == "help":
             display_help()
@@ -163,6 +184,11 @@ def start_new_chat():
     while True:
         try:
             user_input = get_user_input()
+
+            # Проверяем, что ввод не пустой
+            if not user_input.strip():
+                continue
+
             if user_input.lower() == "exit":
                 break
 
@@ -201,35 +227,162 @@ def start_new_chat():
 
 def settings():
     """Меню настроек."""
+    from src.database import get_settings, update_settings
+
     while True:
         choice = display_settings_menu()
 
         if choice == "1":
-            models = load_models()
             current_model = get_current_model()
 
-            if not models:
-                print("Model list is empty or unavailable")
+            # Показываем текущую модель и предлагаем ввести новую вручную
+            os.system("cls" if os.name == "nt" else "clear")
+            print(f"\n{Fore.CYAN}=== Model Selection ==={Style.RESET_ALL}\n")
+
+            if current_model:
+                print(
+                    f"{Fore.YELLOW}Current model:{Style.RESET_ALL} {current_model.get('name', current_model.get('id', 'Unknown'))}"
+                )
+            else:
+                print(f"{Fore.YELLOW}Current model:{Style.RESET_ALL} Not set")
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.LIGHTBLACK_EX}Available models can be found on provider's website.{Style.RESET_ALL}"
+            )
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}Enter model ID or '0' to cancel:{Style.RESET_ALL}"
+            )
+            model_input = input().strip()
+
+            if model_input == "0":
+                continue
+
+            if model_input:
+                _, message = change_model(model_input)
+                print(message)
+
                 input("Press Enter to continue...")
+        elif choice == "2":
+            # Изменение API ключа
+            current_settings = get_settings()
+            current_api_key = current_settings.get("api_key", "")
+
+            os.system("cls" if os.name == "nt" else "clear")
+            print(f"\n{Fore.CYAN}=== API Key Settings ==={Style.RESET_ALL}\n")
+
+            if current_api_key:
+                masked_key = (
+                    current_api_key[:8] + "..." if len(current_api_key) > 8 else "..."
+                )
+                print(f"{Fore.YELLOW}Current API key:{Style.RESET_ALL} {masked_key}")
+            else:
+                print(f"{Fore.YELLOW}Current API key:{Style.RESET_ALL} Not set")
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}Enter new API key or '0' to cancel:{Style.RESET_ALL}"
+            )
+            api_key_input = input().strip()
+
+            if api_key_input == "0":
                 continue
 
-            choice = display_models(models, current_model)
+<<<<<<< HEAD
+            if api_key_input:
+                # Обновляем только API ключ, оставляя остальные настройки без изменений
+                update_settings(
+                    api_key_input,
+                    current_settings.get(
+                        "endpoint", "https://api.intelligence.io.solutions/api/v1/"
+                    ),
+                    current_settings.get(
+                        "model", "meta-llama/Llama-3.2-90B-Vision-Instruct"
+                    ),
+                )
+                print(f"{Fore.GREEN}API key updated successfully{Style.RESET_ALL}")
+                input("Press Enter to continue...")
+        elif choice == "3":
+            # Изменение эндпоинта
+            current_settings = get_settings()
+            current_endpoint = current_settings.get("endpoint", "")
 
-            if choice == "0":
+            os.system("cls" if os.name == "nt" else "clear")
+            print(f"\n{Fore.CYAN}=== Endpoint Settings ==={Style.RESET_ALL}\n")
+
+            if current_endpoint:
+                print(
+                    f"{Fore.YELLOW}Current endpoint:{Style.RESET_ALL} {current_endpoint}"
+                )
+            else:
+                print(f"{Fore.YELLOW}Current endpoint:{Style.RESET_ALL} Not set")
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}Enter new endpoint or '0' to cancel:{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.LIGHTBLACK_EX}Example: https://api.openai.com/v1/{Style.RESET_ALL}"
+            )
+            endpoint_input = input().strip()
+
+            if endpoint_input == "0":
                 continue
 
-            try:
-                model_index = int(choice) - 1
-                if 0 <= model_index < len(models):
-                    selected_model = models[model_index]
-                    _, message = change_model(selected_model["id"])
+            if endpoint_input:
+                # Обновляем только эндпоинт, оставляя остальные настройки без изменений
+                update_settings(
+                    current_settings.get("api_key", ""),
+                    endpoint_input,
+                    current_settings.get(
+                        "model", "meta-llama/Llama-3.2-90B-Vision-Instruct"
+                    ),
+                )
+                print(f"{Fore.GREEN}Endpoint updated successfully{Style.RESET_ALL}")
+=======
+            # Показываем текущую модель и предлагаем ввести новую вручную
+            os.system("cls" if os.name == "nt" else "clear")
+            print(f"\n{Fore.CYAN}=== Model Selection ==={Style.RESET_ALL}\n")
+
+            if current_model:
+                print(
+                    f"{Fore.YELLOW}Current model:{Style.RESET_ALL} {current_model.get('name', current_model.get('id', 'Unknown'))}"
+                )
+            else:
+                print(f"{Fore.YELLOW}Current model:{Style.RESET_ALL} Not set")
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.LIGHTBLACK_EX}Available models can be found on the provider's website.{Style.RESET_ALL}"
+            )
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}Enter model ID or '0' to cancel:{Style.RESET_ALL}"
+            )
+            model_input = input().strip()
+
+            if model_input == "0":
+                continue
+
+            if model_input:
+                # Проверяем, является ли ввод числом (выбор из списка)
+                try:
+                    model_index = int(model_input) - 1
+                    if 0 <= model_index < len(models):
+                        selected_model = models[model_index]
+                        _, message = change_model(selected_model["id"])
+                        print(message)
+                    else:
+                        print("Invalid model selection")
+                except ValueError:
+                    # Если ввод не число, считаем это ID модели
+                    _, message = change_model(model_input)
                     print(message)
-                    input("Press Enter to continue...")
-                else:
-                    print("Invalid model selection")
-                    input("Press Enter to continue...")
-            except ValueError:
-                print("Invalid input format")
+
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
                 input("Press Enter to continue...")
         elif choice == "0":
             break
@@ -262,4 +415,12 @@ def show_main_menu():
 
 
 if __name__ == "__main__":
+    # Инициализируем базу данных
+    from src.database import init_database, migrate_settings_from_json
+
+    init_database()
+
+    # Мигрируем настройки из JSON в базу данных
+    migrate_settings_from_json()
+
     show_main_menu()

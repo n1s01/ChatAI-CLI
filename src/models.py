@@ -2,9 +2,13 @@
 Модуль для работы с моделями AI.
 """
 
+<<<<<<< HEAD
+from src.database import get_model, update_settings
+=======
 import os
 import json
 from config.config import update_settings, get_model_id
+from colorama import Fore, Style
 
 
 MODELS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "models.json")
@@ -37,33 +41,75 @@ def get_model_by_id(model_id):
         if model.get("id") == model_id:
             return model
     return None
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
 
 
 def change_model(model_id):
     """Изменение текущей модели."""
+<<<<<<< HEAD
+=======
     model = get_model_by_id(model_id)
-    if not model:
-        return False, "Модель с указанным ID не найдена"
-
+    
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
     try:
-        # Читаем текущие настройки из файла
-        settings_path = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "config", "settings.json"
-        )
-        with open(settings_path, "r", encoding="utf-8") as settings_file:
-            current_settings = json.load(settings_file)
+        # Получаем текущие настройки из базы данных
+        from src.database import get_settings
 
+        current_settings = get_settings()
+
+        # Обновляем только модель, оставляя остальные настройки без изменений
+        update_settings(
+            current_settings.get("api_key", ""),
+            current_settings.get(
+                "endpoint", "https://api.intelligence.io.solutions/api/v1/"
+            ),
+            model_id,
+        )
+
+<<<<<<< HEAD
+        # Формируем сообщение об успешном изменении
+        return True, f"Модель успешно изменена на: {model_id}"
+    except (IOError, OSError, KeyError) as e:
+=======
         # Обновляем только модель
         current_settings["model"] = model_id
 
         # Сохраняем обновленные настройки
         update_settings(current_settings)
-        return True, f"Модель успешно изменена на: {model.get('name', model_id)}"
+        
+        # Формируем сообщение об успешном изменении
+        if model:
+            model_name = model.get('name', model_id)
+            return True, f"Модель успешно изменена на: {model_name}"
+        else:
+            # Если модель не найдена в списке, предупреждаем пользователя
+            return True, f"Модель изменена на: {model_id}\n{Fore.LIGHTBLACK_EX}Внимание: Эта модель отсутствует в списке поддерживаемых. Убедитесь, что она доступна на сайте провайдера.{Style.RESET_ALL}"
     except (IOError, OSError, KeyError, json.JSONDecodeError) as e:
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
         return False, f"Ошибка при изменении модели: {str(e)}"
 
 
 def get_current_model():
     """Получение текущей модели."""
+<<<<<<< HEAD
+    model_id = get_model()
+
+    # Если модель установлена, возвращаем базовую информацию
+    if model_id:
+        return {"id": model_id, "name": model_id}
+
+=======
     model_id = get_model_id()
-    return get_model_by_id(model_id)
+    model = get_model_by_id(model_id)
+    
+    # Если модель найдена в списке, возвращаем ее
+    if model:
+        return model
+    
+    # Если модель не найдена в списке, но ID установлен, возвращаем базовую информацию
+    if model_id:
+        return {"id": model_id, "name": model_id}
+    
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
+    # Если модель не установлена, возвращаем None
+    return None

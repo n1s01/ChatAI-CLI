@@ -2,26 +2,23 @@
 Модуль для работы с API.
 """
 
-import os
 import openai
-from dotenv import load_dotenv
 from .stats import update_usage
+from .database import get_api_key, get_endpoint
 
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', '.env'))
 
-api_key = os.getenv("IOINTELLIGENCE_API_KEY")
+def get_client():
+    """Получение клиента OpenAI с текущими настройками."""
+    api_key = get_api_key()
+    endpoint = get_endpoint()
 
-client = openai.OpenAI(
-    api_key=api_key,
-    base_url="https://api.intelligence.io.solutions/api/v1/"
-)
+    return openai.OpenAI(api_key=api_key, base_url=endpoint)
+
 
 def send_message(messages, model_id):
     """Отправка сообщения и получение ответа."""
-    response = client.chat.completions.create(
-        model=model_id,
-        messages=messages
-    )
+    client = get_client()
+    response = client.chat.completions.create(model=model_id, messages=messages)
 
     answer = response.choices[0].message.content
     usage = getattr(response, "usage", None)
