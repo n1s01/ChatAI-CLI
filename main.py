@@ -95,6 +95,10 @@ def handle_command(user_input, messages):
                 print(message)
                 input("Press Enter to continue...")
             else:
+<<<<<<< HEAD
+=======
+                # Показываем текущую модель и предлагаем ввести новую вручную
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
                 os.system("cls" if os.name == "nt" else "clear")
                 print(f"\n{Fore.CYAN}=== Model Selection ==={Style.RESET_ALL}\n")
 
@@ -121,8 +125,24 @@ def handle_command(user_input, messages):
                     return True
 
                 if model_input:
+<<<<<<< HEAD
                     _, message = change_model(model_input)
                     print(message)
+=======
+                    # Проверяем, является ли ввод числом (выбор из списка)
+                    try:
+                        model_index = int(model_input) - 1
+                        if 0 <= model_index < len(models):
+                            selected_model = models[model_index]
+                            _, message = change_model(selected_model["id"])
+                            print(message)
+                        else:
+                            print("Invalid model selection")
+                    except ValueError:
+                        # Если ввод не число, считаем это ID модели
+                        _, message = change_model(model_input)
+                        print(message)
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
 
                     input("Press Enter to continue...")
 
@@ -270,6 +290,7 @@ def settings():
             if api_key_input == "0":
                 continue
 
+<<<<<<< HEAD
             if api_key_input:
                 # Обновляем только API ключ, оставляя остальные настройки без изменений
                 update_settings(
@@ -319,6 +340,49 @@ def settings():
                     ),
                 )
                 print(f"{Fore.GREEN}Endpoint updated successfully{Style.RESET_ALL}")
+=======
+            # Показываем текущую модель и предлагаем ввести новую вручную
+            os.system("cls" if os.name == "nt" else "clear")
+            print(f"\n{Fore.CYAN}=== Model Selection ==={Style.RESET_ALL}\n")
+
+            if current_model:
+                print(
+                    f"{Fore.YELLOW}Current model:{Style.RESET_ALL} {current_model.get('name', current_model.get('id', 'Unknown'))}"
+                )
+            else:
+                print(f"{Fore.YELLOW}Current model:{Style.RESET_ALL} Not set")
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.LIGHTBLACK_EX}Available models can be found on the provider's website.{Style.RESET_ALL}"
+            )
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}Enter model ID or '0' to cancel:{Style.RESET_ALL}"
+            )
+            model_input = input().strip()
+
+            if model_input == "0":
+                continue
+
+            if model_input:
+                # Проверяем, является ли ввод числом (выбор из списка)
+                try:
+                    model_index = int(model_input) - 1
+                    if 0 <= model_index < len(models):
+                        selected_model = models[model_index]
+                        _, message = change_model(selected_model["id"])
+                        print(message)
+                    else:
+                        print("Invalid model selection")
+                except ValueError:
+                    # Если ввод не число, считаем это ID модели
+                    _, message = change_model(model_input)
+                    print(message)
+
+>>>>>>> 3af0b03aa2854b0320bf660b95f2541853d1b42a
                 input("Press Enter to continue...")
         elif choice == "0":
             break
