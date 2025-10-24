@@ -5,6 +5,7 @@
 import os
 import json
 from config.config import update_settings, get_model_id
+from colorama import Fore, Style
 
 
 MODELS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "models.json")
@@ -42,9 +43,7 @@ def get_model_by_id(model_id):
 def change_model(model_id):
     """Изменение текущей модели."""
     model = get_model_by_id(model_id)
-    if not model:
-        return False, "Модель с указанным ID не найдена"
-
+    
     try:
         # Читаем текущие настройки из файла
         settings_path = os.path.join(
@@ -58,7 +57,14 @@ def change_model(model_id):
 
         # Сохраняем обновленные настройки
         update_settings(current_settings)
-        return True, f"Модель успешно изменена на: {model.get('name', model_id)}"
+        
+        # Формируем сообщение об успешном изменении
+        if model:
+            model_name = model.get('name', model_id)
+            return True, f"Модель успешно изменена на: {model_name}"
+        else:
+            # Если модель не найдена в списке, предупреждаем пользователя
+            return True, f"Модель изменена на: {model_id}\n{Fore.LIGHTBLACK_EX}Внимание: Эта модель отсутствует в списке поддерживаемых. Убедитесь, что она доступна на сайте провайдера.{Style.RESET_ALL}"
     except (IOError, OSError, KeyError, json.JSONDecodeError) as e:
         return False, f"Ошибка при изменении модели: {str(e)}"
 
@@ -66,4 +72,15 @@ def change_model(model_id):
 def get_current_model():
     """Получение текущей модели."""
     model_id = get_model_id()
-    return get_model_by_id(model_id)
+    model = get_model_by_id(model_id)
+    
+    # Если модель найдена в списке, возвращаем ее
+    if model:
+        return model
+    
+    # Если модель не найдена в списке, но ID установлен, возвращаем базовую информацию
+    if model_id:
+        return {"id": model_id, "name": model_id}
+    
+    # Если модель не установлена, возвращаем None
+    return None
