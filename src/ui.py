@@ -62,8 +62,10 @@ def display_settings_menu():
     clear_screen()
     print(f"\n{Fore.CYAN}=== Settings ==={Style.RESET_ALL}")
     print(f"{Fore.LIGHTBLACK_EX}1. Change model{Style.RESET_ALL}")
+    print(f"{Fore.LIGHTBLACK_EX}2. Change API key{Style.RESET_ALL}")
+    print(f"{Fore.LIGHTBLACK_EX}3. Change endpoint{Style.RESET_ALL}")
     print(f"{Fore.LIGHTBLACK_EX}0. Back to main menu{Style.RESET_ALL}")
-    return input(f"\n{Fore.LIGHTBLACK_EX}Select an option (0-1): {Style.RESET_ALL}")
+    return input(f"\n{Fore.LIGHTBLACK_EX}Select an option (0-3): {Style.RESET_ALL}")
 
 
 def display_chat_start():
@@ -90,9 +92,16 @@ def display_error(error_type, error_message):
     """Отображение ошибки."""
     if error_type == "api":
         # Проверяем, является ли ошибка связанной с неподдерживаемой моделью
-        if "does not support Chat Completions API" in error_message or "model not found" in error_message.lower():
-            print(f"{Fore.RED}Model Error:{Style.RESET_ALL} The selected model is not supported or not found.")
-            print(f"{Fore.LIGHTBLACK_EX}Please use a different model or check the available models on the provider's website.{Style.RESET_ALL}\n")
+        if (
+            "does not support Chat Completions API" in error_message
+            or "model not found" in error_message.lower()
+        ):
+            print(
+                f"{Fore.RED}Model Error:{Style.RESET_ALL} The selected model is not supported or not found."
+            )
+            print(
+                f"{Fore.LIGHTBLACK_EX}Please use a different model or check the available models on the provider's website.{Style.RESET_ALL}\n"
+            )
         else:
             print(f"API Error: {error_message}\n")
     elif error_type == "connection":

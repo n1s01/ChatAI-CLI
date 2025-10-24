@@ -26,7 +26,7 @@ from src.ui import (
     display_export_error,
 )
 from src.stats import get_today_stats, get_all_time_stats
-from src.models import load_models, get_current_model, change_model
+from src.models import get_current_model, change_model
 from src.export import export_to_json, export_to_txt
 from config.config import get_system_message, get_model_id
 
@@ -34,6 +34,11 @@ from config.config import get_system_message, get_model_id
 def handle_command(user_input, messages):
     """Обработка специальных команд."""
     parts = user_input.strip().split()
+
+    # Проверяем, что ввод не пустой
+    if not parts:
+        return False
+
     command = parts[0].lower()
 
     available_commands = {
@@ -81,30 +86,15 @@ def handle_command(user_input, messages):
             return True
 
         elif command == "model":
-            models = load_models()
             current_model = get_current_model()
 
-            if not models:
-                print("Model list is empty or unavailable")
-                input("Press Enter to continue...")
-                return True
-
             if len(parts) > 1:
-                try:
-                    model_index = int(parts[1]) - 1
-                    if 0 <= model_index < len(models):
-                        selected_model = models[model_index]
-                        _, message = change_model(selected_model["id"])
-                        print(message)
-                        input("Press Enter to continue...")
-                    else:
-                        print("Invalid model selection")
-                        input("Press Enter to continue...")
-                except ValueError:
-                    print("Invalid input format. Use 'model' or 'model [number]'")
-                    input("Press Enter to continue...")
+                # Если указан ID модели напрямую
+                model_id = parts[1]
+                _, message = change_model(model_id)
+                print(message)
+                input("Press Enter to continue...")
             else:
-                # Показываем текущую модель и предлагаем ввести новую вручную
                 os.system("cls" if os.name == "nt" else "clear")
                 print(f"\n{Fore.CYAN}=== Model Selection ==={Style.RESET_ALL}\n")
 
@@ -131,19 +121,8 @@ def handle_command(user_input, messages):
                     return True
 
                 if model_input:
-                    # Проверяем, является ли ввод числом (выбор из списка)
-                    try:
-                        model_index = int(model_input) - 1
-                        if 0 <= model_index < len(models):
-                            selected_model = models[model_index]
-                            _, message = change_model(selected_model["id"])
-                            print(message)
-                        else:
-                            print("Invalid model selection")
-                    except ValueError:
-                        # Если ввод не число, считаем это ID модели
-                        _, message = change_model(model_input)
-                        print(message)
+                    _, message = change_model(model_input)
+                    print(message)
 
                     input("Press Enter to continue...")
 
@@ -185,6 +164,11 @@ def start_new_chat():
     while True:
         try:
             user_input = get_user_input()
+
+            # Проверяем, что ввод не пустой
+            if not user_input.strip():
+                continue
+
             if user_input.lower() == "exit":
                 break
 
@@ -223,17 +207,13 @@ def start_new_chat():
 
 def settings():
     """Меню настроек."""
+    from src.database import get_settings, update_settings
+
     while True:
         choice = display_settings_menu()
 
         if choice == "1":
-            models = load_models()
             current_model = get_current_model()
-
-            if not models:
-                print("Model list is empty or unavailable")
-                input("Press Enter to continue...")
-                continue
 
             # Показываем текущую модель и предлагаем ввести новую вручную
             os.system("cls" if os.name == "nt" else "clear")
@@ -250,7 +230,7 @@ def settings():
                 f"\n{Fore.LIGHTBLACK_EX}You can enter a model ID manually.{Style.RESET_ALL}"
             )
             print(
-                f"{Fore.LIGHTBLACK_EX}Available models can be found on the provider's website.{Style.RESET_ALL}"
+                f"{Fore.LIGHTBLACK_EX}Available models can be found on provider's website.{Style.RESET_ALL}"
             )
 
             print(
@@ -262,20 +242,83 @@ def settings():
                 continue
 
             if model_input:
-                # Проверяем, является ли ввод числом (выбор из списка)
-                try:
-                    model_index = int(model_input) - 1
-                    if 0 <= model_index < len(models):
-                        selected_model = models[model_index]
-                        _, message = change_model(selected_model["id"])
-                        print(message)
-                    else:
-                        print("Invalid model selection")
-                except ValueError:
-                    # Если ввод не число, считаем это ID модели
-                    _, message = change_model(model_input)
-                    print(message)
+                _, message = change_model(model_input)
+                print(message)
 
+                input("Press Enter to continue...")
+        elif choice == "2":
+            # Изменение API ключа
+            current_settings = get_settings()
+            current_api_key = current_settings.get("api_key", "")
+
+            os.system("cls" if os.name == "nt" else "clear")
+            print(f"\n{Fore.CYAN}=== API Key Settings ==={Style.RESET_ALL}\n")
+
+            if current_api_key:
+                masked_key = (
+                    current_api_key[:8] + "..." if len(current_api_key) > 8 else "..."
+                )
+                print(f"{Fore.YELLOW}Current API key:{Style.RESET_ALL} {masked_key}")
+            else:
+                print(f"{Fore.YELLOW}Current API key:{Style.RESET_ALL} Not set")
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}Enter new API key or '0' to cancel:{Style.RESET_ALL}"
+            )
+            api_key_input = input().strip()
+
+            if api_key_input == "0":
+                continue
+
+            if api_key_input:
+                # Обновляем только API ключ, оставляя остальные настройки без изменений
+                update_settings(
+                    api_key_input,
+                    current_settings.get(
+                        "endpoint", "https://api.intelligence.io.solutions/api/v1/"
+                    ),
+                    current_settings.get(
+                        "model", "meta-llama/Llama-3.2-90B-Vision-Instruct"
+                    ),
+                )
+                print(f"{Fore.GREEN}API key updated successfully{Style.RESET_ALL}")
+                input("Press Enter to continue...")
+        elif choice == "3":
+            # Изменение эндпоинта
+            current_settings = get_settings()
+            current_endpoint = current_settings.get("endpoint", "")
+
+            os.system("cls" if os.name == "nt" else "clear")
+            print(f"\n{Fore.CYAN}=== Endpoint Settings ==={Style.RESET_ALL}\n")
+
+            if current_endpoint:
+                print(
+                    f"{Fore.YELLOW}Current endpoint:{Style.RESET_ALL} {current_endpoint}"
+                )
+            else:
+                print(f"{Fore.YELLOW}Current endpoint:{Style.RESET_ALL} Not set")
+
+            print(
+                f"\n{Fore.LIGHTBLACK_EX}Enter new endpoint or '0' to cancel:{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.LIGHTBLACK_EX}Example: https://api.openai.com/v1/{Style.RESET_ALL}"
+            )
+            endpoint_input = input().strip()
+
+            if endpoint_input == "0":
+                continue
+
+            if endpoint_input:
+                # Обновляем только эндпоинт, оставляя остальные настройки без изменений
+                update_settings(
+                    current_settings.get("api_key", ""),
+                    endpoint_input,
+                    current_settings.get(
+                        "model", "meta-llama/Llama-3.2-90B-Vision-Instruct"
+                    ),
+                )
+                print(f"{Fore.GREEN}Endpoint updated successfully{Style.RESET_ALL}")
                 input("Press Enter to continue...")
         elif choice == "0":
             break
@@ -308,4 +351,12 @@ def show_main_menu():
 
 
 if __name__ == "__main__":
+    # Инициализируем базу данных
+    from src.database import init_database, migrate_settings_from_json
+
+    init_database()
+
+    # Мигрируем настройки из JSON в базу данных
+    migrate_settings_from_json()
+
     show_main_menu()
